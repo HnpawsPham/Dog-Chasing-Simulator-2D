@@ -1,16 +1,26 @@
 
+using System;
 using System.Data.Common;
+using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
 
-    [SerializeField] private Transform leftSide;
-    [SerializeField] private Transform rightSide;
+    [Header("Moving boundary:")]
+    [SerializeField] private GameObject leftSide;
+    [SerializeField] private GameObject rightSide;
 
     [SerializeField] private Transform enemy;
+    [SerializeField] private GameObject player;
+
+
+    [Header("Enemy speed:")]
     [SerializeField] private float defaultSpeed;
+    [SerializeField] private float maxSpeed;
     private float speed;
+    private float currentDistance;
 
     [SerializeField] private float idleTime;
     private float idleWait;
@@ -24,7 +34,7 @@ public class EnemyMovement : MonoBehaviour
     void Awake()
     {
         currentScale = enemy.localScale;
-        enemyAttack = GetComponent<EnemyAttack>();
+        enemyAttack = GetComponentInChildren<EnemyAttack>();
 
         speed = defaultSpeed;
         idleWait = 0;
@@ -37,41 +47,62 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        // ENEMY MOVE AROUND
-        if (movingLeft)
+
+        if (!enemyAttack.PlayerInSight())
         {
-            if (enemy.position.x >= leftSide.position.x)
+            // NORMAL SPEED WHEN NOT CHASING
+            speed = defaultSpeed;
+
+            anim.SetBool("isRunning", false);
+            anim.SetBool("isWalking", true);
+
+            // ENEMY MOVE AROUND
+            leftSide.SetActive(true);
+            rightSide.SetActive(true);
+
+            if (movingLeft)
             {
-                MoveInDirection(-1);
+                if (enemy.position.x >= leftSide.transform.position.x)
+                {
+                    MoveInDirection(-1);
+                }
+                else
+                {
+                    ChangeDirection();
+                }
             }
             else
             {
-                ChangeDirection();
+                if (enemy.position.x <= rightSide.transform.position.x)
+                {
+                    MoveInDirection(1);
+                }
+                else
+                {
+                    ChangeDirection();
+                }
             }
         }
         else
         {
-            if (enemy.position.x <= rightSide.position.x)
-            {
-                MoveInDirection(1);
+            leftSide.SetActive(false);
+            rightSide.SetActive(false);
+
+            speed = maxSpeed;
+
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isRunning", true);
+
+            // CHASE PLAYER
+            if(player.transform.position.x > enemy.position.x){
+                enemy.position = new Vector3(enemy.position.x + Time.deltaTime * speed, enemy.position.y, enemy.position.z);
             }
-            else
-            {
-                ChangeDirection();
+            else{
+                enemy.position = new Vector3(enemy.position.x + Time.deltaTime * -1 * speed, enemy.position.y, enemy.position.z);
             }
         }
-
-
-        // IF ENEMY SEES PLAYER, IT WILL SPEED UP
-        // if (enemyAttack.PlayerInSight())
-        // {
-        //     speed *= 2;
-        // }
-        // else
-        // {
-        //     speed = defaultSpeed;
-        // }
     }
+
 
     private void ChangeDirection()
     {
@@ -83,8 +114,11 @@ public class EnemyMovement : MonoBehaviour
         {
             movingLeft = !movingLeft;
         }
-
-        anim.SetBool("isWalking", false);
+        else
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isRunning", false);
+        }
     }
 
     // MOVE TO THE GIVEN DIRECTION

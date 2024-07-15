@@ -61,7 +61,6 @@ public class Health : MonoBehaviour
 
                 isDead = true;
             }
-
         }
     }
     
@@ -72,5 +71,9 @@ public class Health : MonoBehaviour
     }
     private void endHealEffect(){
         healEffect.SetActive(false);
+    }
+
+    private void HideAfterDeath(){
+        gameObject.SetActive(false);
     }
 }

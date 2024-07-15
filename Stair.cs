@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class stair : MonoBehaviour
+public class Stair : MonoBehaviour
 {
     [SerializeField] private BoxCollider2D player;
     [SerializeField] private LayerMask stairEndPoint;

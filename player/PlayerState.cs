@@ -16,11 +16,13 @@ public class playerState : MonoBehaviour
     
     [SerializeField] public int ammoLeft;
 
+    [Header("Layer masks: ")]
     [SerializeField] private LayerMask surfaceLayer;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask crateStackLayer;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask hangingRopeLayer;
+    [SerializeField] private LayerMask enemyLayer;
 
     void Awake()
     {
@@ -72,7 +74,7 @@ public class playerState : MonoBehaviour
     // CHECK IF PLAYER IS ABLE TO ATTACK
     public bool canAttack()
     {
-        return horizontalAxis == 0 && onSurface();
+        return Input.GetMouseButtonDown(0) && onSurface();
     }
 
     // CHECK IF PLAYER IS ABLE TO SHOOT
@@ -141,4 +143,15 @@ public class playerState : MonoBehaviour
     private void RefillAmmo(){
         ammoLeft = 15;
     } 
+
+    // CHECK IF PLAYER ATTACKS HIT ENEMY
+    public bool HitEnemy(){
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.left, 0.1f, enemyLayer);
+
+        if(raycastHit.collider != null){
+            raycastHit.transform.GetComponent<Health>().Decrease(5);
+        }
+
+        return raycastHit.collider != null;
+    }
 }

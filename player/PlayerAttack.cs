@@ -62,7 +62,10 @@ public class playerAttack : MonoBehaviour
     {
         cooldownTimer = 0;
         anim.SetTrigger("attack");
+
+        if(playerState.HitEnemy()){}
     }
+
     // SHOOT BY GUN
     private void Shoot()
     {

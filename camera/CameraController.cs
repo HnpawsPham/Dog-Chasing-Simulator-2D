@@ -19,7 +19,7 @@ public class cameraControl : MonoBehaviour
     void Start()
     {
         speed = 2f;
-        aheadDistance = 2;
+        aheadDistance = 1;
     }
 
     // FOLLOW PLAYER

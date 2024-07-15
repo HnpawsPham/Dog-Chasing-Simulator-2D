@@ -14,12 +14,17 @@ public class Movement : MonoBehaviour
 
     [SerializeField] private GameObject self;
 
+    [Header("Setting")]
+    [SerializeField] private float respawnTime;
+    private float respawnWait;
+
     void Start()
     {
         health = 25;
         moveDistance = 0.1f;
         moveSpeed = 0.5f;
         moveUp = false;
+        respawnWait = respawnTime;
 
         upMax = transform.position.y + moveDistance;
         downMax = transform.position.y - moveDistance;
@@ -45,6 +50,16 @@ public class Movement : MonoBehaviour
                 moveUp = true;
             }
         }
+
+        // RESPAWM AFTER A FEW SECONDS
+
+        respawnWait += Time.deltaTime;
+
+        if(respawnWait >= respawnTime){
+            respawnWait = 0;
+
+            self.SetActive(true);
+        }
     }
 
     // WHEN PLAYER TOUCH IT, IT HEALS PLAYER
@@ -53,7 +68,7 @@ public class Movement : MonoBehaviour
         if(collision.tag == "Player"){
             collision.GetComponent<Health>().Increase(health);
 
-            Destroy(self);
+            self.SetActive(false);
         }
     }
 }
