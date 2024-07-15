@@ -24,7 +24,7 @@ public class Movement : MonoBehaviour
         moveDistance = 0.1f;
         moveSpeed = 0.5f;
         moveUp = false;
-        respawnWait = respawnTime;
+        respawnWait = 0;
 
         upMax = transform.position.y + moveDistance;
         downMax = transform.position.y - moveDistance;
@@ -34,38 +34,48 @@ public class Movement : MonoBehaviour
     void Update()
     {
         // MOVE UP AND DOWN TO ATTRACT ATTENTION    
-        if(moveUp){
-            if(transform.position.y < upMax){
+        if (moveUp)
+        {
+            if (transform.position.y < upMax)
+            {
                 transform.position = new Vector3(transform.position.x, transform.position.y + moveSpeed * Time.deltaTime, transform.position.z);
             }
-            else{
+            else
+            {
                 moveUp = false;
             }
         }
-        else{
-            if(transform.position.y > downMax){
+        else
+        {
+            if (transform.position.y > downMax)
+            {
                 transform.position = new Vector3(transform.position.x, transform.position.y - moveSpeed * Time.deltaTime, transform.position.z);
             }
-            else{
+            else
+            {
                 moveUp = true;
             }
         }
 
         // RESPAWM AFTER A FEW SECONDS
+        if (!self.activeInHierarchy)
+        {
+            respawnWait += Time.deltaTime;
 
-        respawnWait += Time.deltaTime;
+            if (respawnWait >= respawnTime)
+            {
+                respawnWait = 0;
 
-        if(respawnWait >= respawnTime){
-            respawnWait = 0;
-
-            self.SetActive(true);
+                self.SetActive(true);
+            }
         }
     }
 
     // WHEN PLAYER TOUCH IT, IT HEALS PLAYER
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player"){
+        if (collision.tag == "Player")
+        {
             collision.GetComponent<Health>().Increase(health);
 
             self.SetActive(false);
