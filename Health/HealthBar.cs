@@ -7,7 +7,7 @@ using Image = UnityEngine.UI.Image;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private Health playerHealth;
+    [SerializeField] private Health personHealth;
     [SerializeField] private Image currentHealthBar;
 
     void Awake()
@@ -17,6 +17,6 @@ public class HealthBar : MonoBehaviour
 
     void Update()
     {
-        currentHealthBar.fillAmount = playerHealth.current / 100;
+        currentHealthBar.fillAmount = personHealth.current / 100;
     }
 }

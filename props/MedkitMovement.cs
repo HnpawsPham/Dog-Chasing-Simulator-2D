@@ -5,26 +5,19 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    private float health;
     private float moveDistance;
-    private float moveSpeed;
     private bool moveUp;
     private float upMax;
     private float downMax;
 
-    [SerializeField] private GameObject self;
-
     [Header("Setting")]
-    [SerializeField] private float respawnTime;
-    private float respawnWait;
+    [SerializeField] private float healHealth;
+    [SerializeField] private float speed;
 
     void Start()
     {
-        health = 25;
         moveDistance = 0.1f;
-        moveSpeed = 0.5f;
         moveUp = false;
-        respawnWait = 0;
 
         upMax = transform.position.y + moveDistance;
         downMax = transform.position.y - moveDistance;
@@ -38,7 +31,7 @@ public class Movement : MonoBehaviour
         {
             if (transform.position.y < upMax)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y + moveSpeed * Time.deltaTime, transform.position.z);
+                transform.position = new Vector3(transform.position.x, transform.position.y + speed * Time.deltaTime, transform.position.z);
             }
             else
             {
@@ -49,24 +42,11 @@ public class Movement : MonoBehaviour
         {
             if (transform.position.y > downMax)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y - moveSpeed * Time.deltaTime, transform.position.z);
+                transform.position = new Vector3(transform.position.x, transform.position.y - speed * Time.deltaTime, transform.position.z);
             }
             else
             {
                 moveUp = true;
-            }
-        }
-
-        // RESPAWM AFTER A FEW SECONDS
-        if (!self.activeInHierarchy)
-        {
-            respawnWait += Time.deltaTime;
-
-            if (respawnWait >= respawnTime)
-            {
-                respawnWait = 0;
-
-                self.SetActive(true);
             }
         }
     }
@@ -76,9 +56,9 @@ public class Movement : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            collision.GetComponent<Health>().Increase(health);
+            collision.GetComponent<Health>().Increase(healHealth);
 
-            self.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }

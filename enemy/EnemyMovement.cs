@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Data.Common;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.Sqlite;
@@ -17,7 +18,8 @@ public class EnemyMovement : MonoBehaviour
     [Header("Set up:")]
     [SerializeField] private Transform enemy;
     [SerializeField] private BoxCollider2D boxCollider;
-    [SerializeField] private GameObject player;
+    [SerializeField] private Rigidbody2D body;
+    [SerializeField] public GameObject player;
 
 
     [Header("Enemy movement:")]
@@ -32,7 +34,6 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float idleTime;
     [SerializeField] private float jumpDelay;
     private float idleWait;
-    private float jumpWait;
 
     [SerializeField] private Animator anim;
 
@@ -103,15 +104,16 @@ public class EnemyMovement : MonoBehaviour
             anim.SetBool("isWalking", false);
             anim.SetBool("isRunning", true);
 
-            // CHASE PLAYER
-            var direction = (Mathf.Abs(player.transform.position.x) >= Mathf.Abs(enemy.position.x)) ? 1 : -1;
-
             // CHANGE DIRECTION WHILE MOVING
+            var direction = (player.transform.position.x >= enemy.position.x) ? 1 : -1;  
             enemy.localScale = new Vector3(Mathf.Abs(currentScale.x) * direction, currentScale.y, currentScale.z);
 
+            // CHASE PLAYER 
             enemy.position = new Vector3(enemy.position.x + Time.deltaTime * direction * speed, enemy.position.y, enemy.position.z);
 
-            jumpWait += Time.deltaTime;
+            if(Input.GetKeyDown(KeyCode.Space)){
+                StartCoroutine(Jump());
+            }
         }
     }
 
@@ -154,13 +156,10 @@ public class EnemyMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
-    // CHECK IF ENEMY CAN JUMP
-    public bool canJump()
-    {
-        if (onSurface() && jumpWait >= jumpDelay)
-        {
-            return true;
-        }
-        return false;
+    // MAKE ENEMY JUMP WHEN PLAYER JUMP
+    IEnumerator Jump(){
+        yield return new WaitForSeconds(jumpDelay);
+
+        body.velocity = new Vector2(body.velocity.x, jumpHeight);
     }
 }

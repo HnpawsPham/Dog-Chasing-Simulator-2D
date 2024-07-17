@@ -5,19 +5,21 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    [Header("Setting: ")]
+    [SerializeField]private float total;
     [SerializeField] private GameObject healEffect;
-    [SerializeField] private float total;
+
     public float current { get; private set; }
-    private float maxHealth;
     public bool isDead;
+    public bool isHurt;
 
     private Animator anim;
 
     void Start()
     {
         isDead = false;
-        maxHealth = 100;
-        current = 100;
+        isHurt = false;
+        current = total;
 
         anim = GetComponent<Animator>();
     }
@@ -30,13 +32,23 @@ public class Health : MonoBehaviour
         }
     }
 
+    public IEnumerator Hurt(){
+        isHurt = true;
+
+        yield return new WaitForSeconds(1);
+
+        isHurt = false;
+    }
+
     public void Decrease(float damage)
     {
-        current = Mathf.Clamp(current - damage, 0, maxHealth);
+        current = Mathf.Clamp(current - damage, 0, total);
 
         if (current > 0)
         {
             anim.SetTrigger("hurt");
+            
+            StartCoroutine(Hurt());
         }
         else
         {
@@ -65,7 +77,7 @@ public class Health : MonoBehaviour
     }
     
     public void Increase(float health){
-        current = Mathf.Clamp(current + health, current, maxHealth);
+        current = Mathf.Clamp(current + health, current, total);
 
         healEffect.SetActive(true);
     }

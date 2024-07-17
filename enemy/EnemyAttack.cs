@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
+    [Header("Attachment: ")]
+    [SerializeField] private GameObject eye;
+
     [Header("Enemy sight: ")]
     [SerializeField] private float horizontalRange;
     [SerializeField] private float verticalRange;
@@ -13,15 +16,18 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] private float attackCoolDown;
     [SerializeField] private float attackDamage;
 
+    [Header("Layers: ")]
     [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask crateStackLayer;
+
     [SerializeField] private BoxCollider2D boxCollider;
+    [SerializeField] private playerState playerState;
 
     private float coolDownTime = Mathf.Infinity;
 
     private Animator anim;
     private Health playerHealth;
     private EnemyMovement enemyMovement;
-    [SerializeField] private playerState playerState;
 
     private void Awake()
     {
@@ -69,7 +75,22 @@ public class EnemyAttack : MonoBehaviour
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.left, 1.0f, playerLayer);
 
-        return raycastHit.collider != null && !playerHealth.isDead && !playerState.isInsideCrateStack();
+        // IF COLLIDER PLAYER AND PLAYER ISNT DEAD
+        if(raycastHit.collider != null && !playerHealth.isDead){
+
+            // AND IF BOTH PLAYER AND ENEMY IS INSIDE CRATE STACK         OR  PLAYER IS NOT INSIDE CRATE STACK
+            if((playerState.isInsideCrateStack() && isInsideCrateStack()) || (!playerState.isInsideCrateStack())){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // CHECK IF ENEMY IS INSIDE CRATE STACK => CAN SEE PLAYER IF HE IS HIDING
+    public bool isInsideCrateStack(){
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.left, 1.0f, crateStackLayer);
+        return raycastHit.collider != null;
     }
 
     // DRAW ENEMY'S ATTACK VIEW

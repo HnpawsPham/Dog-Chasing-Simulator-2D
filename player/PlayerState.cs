@@ -9,12 +9,15 @@ public class playerState : MonoBehaviour
     private float verticalAxis;
     private bool isHanged;
     private bool fall;
+
+    [Header("Components: ")]
     private BoxCollider2D boxCollider;
     private Animator anim;
     private Health health;
 
-    
+    [Header("Ammo: ")]
     [SerializeField] public int ammoLeft;
+
 
     [Header("Layer masks: ")]
     [SerializeField] private LayerMask surfaceLayer;
@@ -89,12 +92,13 @@ public class playerState : MonoBehaviour
         return horizontalAxis == 0 && onSurface();
     }
 
-    // CHECK IF PLAYER IS INSIDE A BUSH
+    // CHECK IF PLAYER IS INSIDE CRATE STACK
     public bool isInsideCrateStack()
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 0.1f, crateStackLayer);
         return raycastHit.collider != null;
     }
+
 
     // CHECK IF PLAYER IS TOUCHING THE HANGING ROPE
     public bool isTouchedHagingRope()

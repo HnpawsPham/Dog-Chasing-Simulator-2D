@@ -13,9 +13,12 @@ public class playerAttack : MonoBehaviour
     private playerMovement playerMovement;
     private playerState playerState;
 
+    [Header("Cool down time: ")]
     [SerializeField] private float attackCooldown;
     [SerializeField] private float shootCooldown;
     [SerializeField] private float rechargeCooldown;
+
+    [Header("Ammo: ")]
     [SerializeField] private Transform ammoPoint;
     [SerializeField] private GameObject[] ammos;
     

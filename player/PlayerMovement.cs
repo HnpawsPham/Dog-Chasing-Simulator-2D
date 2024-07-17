@@ -13,14 +13,21 @@ public class playerMovement : MonoBehaviour
     private Animator anim;
     private playerState playerState;
     private Health health;
+    private Stamina stamina;
 
-
+    [Header("Attached: ")]
     [SerializeField] private GameObject eye;
     [SerializeField] private GameObject ropeCover;
-    [SerializeField] private float playerSpeed;
-    [SerializeField] private float jumpHeight;
     [SerializeField] private Transform hangPoint;
 
+    [Header("Setting: ")]
+    [SerializeField] private float playerSpeed;
+    [SerializeField] private float jumpHeight;
+    [SerializeField] private float staminaCoolDown;
+    [SerializeField] private float runStaminaLoss;
+    [SerializeField] private float staminaRecover;
+
+    private float coolDownTime = Mathf.Infinity;
     private float horizontalAxis;
     private float verticalAxis;
 
@@ -29,13 +36,14 @@ public class playerMovement : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         playerState = GetComponent<playerState>();
+
         health = GetComponent<Health>();
+        stamina = GetComponent<Stamina>();
     }
 
     public void Start()
     {
-        playerSpeed = 5f;
-        jumpHeight = 10f;
+
     }
 
     void Update()
@@ -52,12 +60,14 @@ public class playerMovement : MonoBehaviour
         Climb();
 
         Hang();
+
+        coolDownTime += Time.deltaTime;
     }
 
     // MOVE LEFT AND RIGHT
     private void Walk()
     {
-        if (playerState.onSurface() && !anim.GetBool("recharge"))
+        if (playerState.onSurface())
         {
             body.velocity = new Vector2(horizontalAxis * playerSpeed, body.velocity.y);
 
@@ -73,6 +83,13 @@ public class playerMovement : MonoBehaviour
             body.transform.rotation = Quaternion.Euler(0, 0, 0);
 
             anim.SetBool("isWalking", true);
+
+            if (!anim.GetBool("isRunning") && coolDownTime >= staminaCoolDown)
+            {
+                stamina.Increase(staminaRecover);
+
+                coolDownTime = 0;
+            }
         }
 
         if (horizontalAxis == 0)
@@ -85,7 +102,7 @@ public class playerMovement : MonoBehaviour
     // RUN
     private void Run()
     {
-        if (playerState.onSurface() && !anim.GetBool("recharge"))
+        if (playerState.onSurface() && !anim.GetBool("recharge") && !stamina.isExhausted)
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
@@ -107,6 +124,13 @@ public class playerMovement : MonoBehaviour
             }
 
             body.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+            if (coolDownTime >= staminaCoolDown)
+            {
+                coolDownTime = 0;
+
+                stamina.Decrease(runStaminaLoss);
+            }
         }
         else
         {
@@ -157,7 +181,7 @@ public class playerMovement : MonoBehaviour
     // HIDE
     private void Hide()
     {
-        if (playerState.isInsideCrateStack() && anim.GetBool("isCrounching"))
+        if (playerState.isInsideCrateStack() && anim.GetBool("isCrounching") && !health.isHurt)
         {
             eye.SetActive(true);    // VISIBLE THE EYE ON TOP OF THE PLAYER
             body.GetComponent<Renderer>().material.color = new Color32(99, 99, 99, 237);   // DARKEN PLAYER
