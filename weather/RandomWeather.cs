@@ -5,7 +5,10 @@ using Random = UnityEngine.Random;
 public class RandomWeather : MonoBehaviour
 {
 
+    [Header("Set up: ")]
     [SerializeField] private GameObject[] weathers;
+    [SerializeField] private AudioSource[] audios;
+
     private float appearTime;
     private float endTime;
     private int index;
@@ -24,12 +27,18 @@ public class RandomWeather : MonoBehaviour
         if(waitTime >= appearTime && !weathers[index].activeInHierarchy){
             weathers[index].SetActive(true);
 
+            if(!audios[index].isPlaying){
+                audios[index].Play();
+            }
 
             waitTime = 0;
         }
 
         if(waitTime >= endTime && weathers[index].activeInHierarchy){
             weathers[index].SetActive(false);
+
+            audios[index].Stop();
+
             waitTime = 0;
 
             CreateRandom();

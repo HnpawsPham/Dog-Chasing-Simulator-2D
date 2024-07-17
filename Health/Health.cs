@@ -9,6 +9,11 @@ public class Health : MonoBehaviour
     [SerializeField]private float total;
     [SerializeField] private GameObject healEffect;
 
+    [Header("Sounds: ")]
+    [SerializeField] private AudioClip hurt;
+    [SerializeField] private AudioClip heal;
+    [SerializeField] private AudioClip die;
+
     public float current { get; private set; }
     public bool isDead;
     public bool isHurt;
@@ -27,8 +32,10 @@ public class Health : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(healEffect.activeInHierarchy){
-            Invoke("endHealEffect", 1f);
+        if(healEffect != null){
+            if(healEffect.activeInHierarchy){
+                Invoke("endHealEffect", 1f);
+            }
         }
     }
 
@@ -46,6 +53,8 @@ public class Health : MonoBehaviour
 
         if (current > 0)
         {
+            ShortSounds.instance.Play(hurt);
+
             anim.SetTrigger("hurt");
             
             StartCoroutine(Hurt());
@@ -54,6 +63,8 @@ public class Health : MonoBehaviour
         {
             if (!isDead)
             {
+                ShortSounds.instance.Play(die);
+
                 anim.SetTrigger("die");
 
                 // PLAYER
@@ -78,6 +89,8 @@ public class Health : MonoBehaviour
     
     public void Increase(float health){
         current = Mathf.Clamp(current + health, current, total);
+
+        ShortSounds.instance.Play(heal);
 
         healEffect.SetActive(true);
     }

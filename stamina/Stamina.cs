@@ -7,14 +7,19 @@ public class Stamina : MonoBehaviour
     [Header("Setting: ")]
     [SerializeField] private float total;
 
+    [Header("Sounds: ")]
+    [SerializeField] private AudioSource exhausted;
+
     public float current { get; private set; }
     public bool isExhausted;
 
     private Animator anim;
-
+    private Health personHealth;
 
     void Start()
     {
+        personHealth = GetComponentInParent<Health>();
+
         current = total;
         isExhausted = false;
 
@@ -23,11 +28,19 @@ public class Stamina : MonoBehaviour
 
 
     void Update()
-    {   
-        if (current > 0)
+    {
+        if (current > total / 10)
         {
-
             isExhausted = false;
+        }
+        else if (current > total / 3)
+        {
+            exhausted.Stop();
+        }
+
+        if (!personHealth.isDead)
+        {
+            exhausted.Stop();
         }
     }
 
@@ -37,6 +50,11 @@ public class Stamina : MonoBehaviour
 
         if (current <= 0)
         {
+            if (!exhausted.isPlaying)
+            {
+                exhausted.Play();
+            }
+
             isExhausted = true;
         }
     }

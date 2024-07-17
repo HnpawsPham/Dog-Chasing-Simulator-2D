@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
@@ -26,6 +27,11 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private float staminaCoolDown;
     [SerializeField] private float runStaminaLoss;
     [SerializeField] private float staminaRecover;
+
+    [Header("Sounds: ")]
+    [SerializeField] private AudioClip jump;
+    [SerializeField] private AudioSource hide;
+    [SerializeField] private AudioSource run;
 
     private float coolDownTime = Mathf.Infinity;
     private float horizontalAxis;
@@ -106,6 +112,10 @@ public class playerMovement : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
+                if(!run.isPlaying){
+                    run.Play();
+                }
+
                 anim.SetBool("isRunning", true);
                 anim.SetBool("isWalking", false);
 
@@ -134,6 +144,8 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
+            run.Stop();
+
             anim.SetBool("isRunning", false);
             playerSpeed = 5;
         }
@@ -144,6 +156,8 @@ public class playerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && playerState.onSurface())
         {
+            ShortSounds.instance.Play(jump);
+
             body.velocity = new Vector2(body.velocity.x, jumpHeight);
             anim.SetBool("jump", true);
         }
@@ -183,11 +197,16 @@ public class playerMovement : MonoBehaviour
     {
         if (playerState.isInsideCrateStack() && anim.GetBool("isCrounching") && !health.isHurt)
         {
+            if(!hide.isPlaying){
+                hide.Play();
+            }
+
             eye.SetActive(true);    // VISIBLE THE EYE ON TOP OF THE PLAYER
             body.GetComponent<Renderer>().material.color = new Color32(99, 99, 99, 237);   // DARKEN PLAYER
         }
         else
-        {       // RESET
+        {
+            hide.Stop();
             eye.SetActive(false);
             body.GetComponent<Renderer>().material.color = Color.white;
         }

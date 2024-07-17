@@ -21,6 +21,10 @@ public class playerAttack : MonoBehaviour
     [Header("Ammo: ")]
     [SerializeField] private Transform ammoPoint;
     [SerializeField] private GameObject[] ammos;
+
+    [Header("Sounds: ")]
+    [SerializeField] private AudioClip gunHit;
+    [SerializeField] private AudioClip recharge;
     
 
     private float cooldownTimer = Mathf.Infinity;
@@ -33,9 +37,6 @@ public class playerAttack : MonoBehaviour
     }
     void Start()
     {
-        attackCooldown = 0.3f;
-        shootCooldown = 0.4f;
-        rechargeCooldown = 0.5f;
     }
 
     // Update is called once per frame
@@ -72,6 +73,8 @@ public class playerAttack : MonoBehaviour
     // SHOOT BY GUN
     private void Shoot()
     {
+        ShortSounds.instance.Play(gunHit);
+
         cooldownTimer = 0;
         anim.SetTrigger("shoot");
 
@@ -84,6 +87,8 @@ public class playerAttack : MonoBehaviour
     // RECHARGE GUN
     private void Recharge()
     {
+        ShortSounds.instance.Play(recharge);
+
         cooldownTimer = 0;
         anim.SetBool("recharge", true);
 

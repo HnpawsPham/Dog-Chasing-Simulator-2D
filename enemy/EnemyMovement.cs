@@ -33,10 +33,15 @@ public class EnemyMovement : MonoBehaviour
     [Header("Wait time: ")]
     [SerializeField] private float idleTime;
     [SerializeField] private float jumpDelay;
-    private float idleWait;
+
+
+    [Header("Sounds: ")]
+    [SerializeField] private AudioSource run;
+
 
     [SerializeField] private Animator anim;
 
+    private float idleWait;
     private Vector3 currentScale;
     private bool movingLeft;
     private float speed;
@@ -59,6 +64,8 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
+        run.Stop();
+        
         if (!enemyAttack.PlayerInSight())
         {
             // NORMAL SPEED WHEN NOT CHASING
@@ -109,6 +116,10 @@ public class EnemyMovement : MonoBehaviour
             enemy.localScale = new Vector3(Mathf.Abs(currentScale.x) * direction, currentScale.y, currentScale.z);
 
             // CHASE PLAYER 
+            if(!run.isPlaying){
+                run.Play();
+            }
+
             enemy.position = new Vector3(enemy.position.x + Time.deltaTime * direction * speed, enemy.position.y, enemy.position.z);
 
             if(Input.GetKeyDown(KeyCode.Space)){
