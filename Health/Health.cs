@@ -17,6 +17,7 @@ public class Health : MonoBehaviour
     public float current { get; private set; }
     public bool isDead;
     public bool isHurt;
+    private UIManager uIManager;
 
     private Animator anim;
 
@@ -27,6 +28,7 @@ public class Health : MonoBehaviour
         current = total;
 
         anim = GetComponent<Animator>();
+        uIManager = FindObjectOfType<UIManager>();
     }
 
     // Update is called once per frame
@@ -69,7 +71,12 @@ public class Health : MonoBehaviour
 
                 // PLAYER
                 if(GetComponent<playerMovement>() != null){
+                    uIManager.GameOver();
                     GetComponent<playerMovement>().enabled = false;
+                }
+
+                if(GetComponent<playerAttack>() != null){
+                    GetComponent<playerAttack>().enabled = false;
                 }
 
                 // ENEMY
@@ -81,7 +88,6 @@ public class Health : MonoBehaviour
                     GetComponent<EnemyAttack>().enabled = false;
                 }
                 
-
                 isDead = true;
             }
         }

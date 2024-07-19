@@ -13,7 +13,6 @@ public class playerState : MonoBehaviour
     [Header("Components: ")]
     private BoxCollider2D boxCollider;
     private Animator anim;
-    private Health health;
 
     [Header("Ammo: ")]
     [SerializeField] public int ammoLeft;
@@ -39,10 +38,10 @@ public class playerState : MonoBehaviour
 
         boxCollider = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+
     }
     void Start()
     {
-
     }
 
     void Update()

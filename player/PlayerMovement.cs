@@ -40,6 +40,7 @@ public class playerMovement : MonoBehaviour
     private float jumpWait = Mathf.Infinity;
     private float horizontalAxis;
     private float verticalAxis;
+    private UIManager uIManager;
 
     void Awake()
     {
@@ -49,6 +50,8 @@ public class playerMovement : MonoBehaviour
 
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
+
+        uIManager = FindObjectOfType<UIManager>();
     }
 
     public void Start()
@@ -75,6 +78,10 @@ public class playerMovement : MonoBehaviour
             // if(Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0){
             //     body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
             // }
+        }
+        // GAME OVER IF PLAYER IS DEAD
+        else{
+            uIManager.GameOver();
         }
 
         Hang();
