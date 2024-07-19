@@ -6,21 +6,28 @@ using UnityEngine.UI;
 public class PointerPosition : MonoBehaviour
 {
     [SerializeField] private RectTransform[] options;
+
+    [Header("Sounds: ")]
     [SerializeField] private AudioClip selectSound;
     [SerializeField] private AudioClip changeSound;
+
+    [Header("Pointer: ")]
+    [SerializeField] private int type;
+    [SerializeField] private int speed;
+    [SerializeField] private float maxIn;
+    [SerializeField] private float maxOut;
+
+    private bool moveIn;
     private RectTransform rect;
+    [SerializeField] private RectTransform otherPointer;
 
     private int currentPos;
 
     private void Awake() {
+        moveIn = true;
+        currentPos = 0;
         rect = GetComponent<RectTransform>();
     }
-
-    void Start()
-    {
-        
-    }
-
 
     void Update()
     {
@@ -35,6 +42,28 @@ public class PointerPosition : MonoBehaviour
         // SELECT OPTIONS
         if(Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return)){
             Select();
+        }
+
+        // MAKE KAWAII ANIMATION
+        if(type == 2){
+            if(moveIn){
+                if(rect.position.x < maxIn){
+                    rect.position = new Vector3(rect.position.x + speed * Time.deltaTime, rect.position.y, rect.position.z);
+                    otherPointer.position = new Vector3(otherPointer.position.x - speed * Time.deltaTime, otherPointer.position.y, otherPointer.position.z);
+                }
+                else{
+                    moveIn = false;
+                }
+            }
+            else{
+                if(rect.position.x > maxOut){
+                    rect.position = new Vector3(rect.position.x - speed * Time.deltaTime, rect.position.y, rect.position.z);
+                    otherPointer.position = new Vector3(otherPointer.position.x + speed * Time.deltaTime, otherPointer.position.y, otherPointer.position.z);
+                }
+                else{
+                    moveIn = true;
+                }
+            }
         }
     }
 
@@ -52,8 +81,27 @@ public class PointerPosition : MonoBehaviour
             currentPos = 0;
         }
 
-        rect.position = new Vector3(options[currentPos].position.x + 80, 
-        options[currentPos].position.y - 50, 0);
+        // TYPES MENU
+        switch(type){
+            // ROTATE & LEFT
+            case 1:
+                rect.position = new Vector3(options[currentPos].position.x + options[currentPos].sizeDelta.x / 2, 
+                options[currentPos].position.y - 50, 0);
+                break;
+
+            // KAWAII 
+            case 2:
+                rect.position = new Vector3(options[currentPos].position.x - Mathf.Abs(options[currentPos].sizeDelta.x * 5), 
+                options[currentPos].position.y, 0);
+
+                otherPointer.position = new Vector3(options[currentPos].position.x + Mathf.Abs(options[currentPos].sizeDelta.x * 5), 
+                options[currentPos].position.y, 0);
+
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void Select(){
