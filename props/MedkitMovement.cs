@@ -56,9 +56,13 @@ public class Movement : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            collision.GetComponent<Health>().Increase(healHealth);
+            var playerHealth = collision.GetComponent<Health>();
 
-            gameObject.SetActive(false);
+            if(playerHealth.current < playerHealth.total && gameObject.activeInHierarchy){
+
+                playerHealth.Increase(healHealth);
+                gameObject.SetActive(false);
+            }
         }
     }
 }

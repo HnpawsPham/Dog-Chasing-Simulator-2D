@@ -9,6 +9,7 @@ public class boundary : MonoBehaviour
     [SerializeField] private cameraControl cam;
 
 
+    // MOVE CAMERA TO EACH ROOM
     private void OnTriggerEnter2D(Collider2D collison) {
         if(collison.tag == "Player"){
             if(collison.transform.position.x < transform.position.x){

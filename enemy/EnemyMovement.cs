@@ -64,10 +64,10 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        run.Stop();
-        
+
         if (!enemyAttack.PlayerInSight())
         {
+            run.Stop();
             // NORMAL SPEED WHEN NOT CHASING
             speed = defaultSpeed;
 
@@ -116,8 +116,11 @@ public class EnemyMovement : MonoBehaviour
             enemy.localScale = new Vector3(Mathf.Abs(currentScale.x) * direction, currentScale.y, currentScale.z);
 
             // CHASE PLAYER 
-            if(!run.isPlaying){
+            if(!run.isPlaying && !GetComponentInChildren<Health>().isDead){
                 run.Play();
+            }
+            else{
+                run.Stop();
             }
 
             enemy.position = new Vector3(enemy.position.x + Time.deltaTime * direction * speed, enemy.position.y, enemy.position.z);

@@ -10,19 +10,21 @@ public class MedkitRespawn : MonoBehaviour
 
     void Start()
     {
-        respawnWait = Mathf.Infinity;
+        respawnWait = 0;
     }
 
 
     void Update()
     {
         // RESPAWN MEDKIT AFTER BEING COLLECTED
-        respawnWait += Time.deltaTime;
+        if(!medkit.activeInHierarchy){
+            respawnWait += Time.deltaTime;
 
-        if(!medkit.activeInHierarchy && respawnWait >= respawnTime){
-            respawnWait = 0;
+            if(respawnWait >= respawnTime){
+                respawnWait = 0;
 
-            medkit.SetActive(true);
+                medkit.SetActive(true);
+            }
         }
     }
 }

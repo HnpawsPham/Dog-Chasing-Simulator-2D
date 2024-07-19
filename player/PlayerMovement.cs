@@ -24,9 +24,12 @@ public class playerMovement : MonoBehaviour
     [Header("Setting: ")]
     [SerializeField] private float playerSpeed;
     [SerializeField] private float jumpHeight;
-    [SerializeField] private float staminaCoolDown;
     [SerializeField] private float runStaminaLoss;
     [SerializeField] private float staminaRecover;
+
+    [Header("Cool down time: ")]
+    [SerializeField] private float staminaCoolDown;
+    [SerializeField] private float jumpCoolDown; // ALLOW MULTIPLE JUMPS
 
     [Header("Sounds: ")]
     [SerializeField] private AudioClip jump;
@@ -34,6 +37,7 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private AudioSource run;
 
     private float coolDownTime = Mathf.Infinity;
+    private float jumpWait = Mathf.Infinity;
     private float horizontalAxis;
     private float verticalAxis;
 
@@ -57,17 +61,26 @@ public class playerMovement : MonoBehaviour
         horizontalAxis = Input.GetAxis("Horizontal");
         verticalAxis = Input.GetAxis("Vertical");
 
-        Walk();
-        Jump();
-        Run();
-        Hide();
-        Crounch();
-        Sneak();
-        Climb();
+        if (!health.isDead)
+        {
+            Walk();
+            Jump();
+            Run();
+            Hide();
+            Crounch();
+            Sneak();
+            Climb();
+
+            // HOLD SPACE TO JUMP HIGHER
+            // if(Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0){
+            //     body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
+            // }
+        }
 
         Hang();
 
         coolDownTime += Time.deltaTime;
+        jumpWait += Time.deltaTime;
     }
 
     // MOVE LEFT AND RIGHT
@@ -112,7 +125,8 @@ public class playerMovement : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                if(!run.isPlaying){
+                if (!run.isPlaying && !health.isDead)
+                {
                     run.Play();
                 }
 
@@ -154,8 +168,10 @@ public class playerMovement : MonoBehaviour
     // JUMP
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && playerState.onSurface())
+        if (Input.GetKeyDown(KeyCode.Space) && jumpWait >= jumpCoolDown)
         {
+            jumpWait = 0;
+
             ShortSounds.instance.Play(jump);
 
             body.velocity = new Vector2(body.velocity.x, jumpHeight);
@@ -163,6 +179,8 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
+            // jumpHeight = defaultJumpHeight;
+
             anim.SetBool("jump", false);
         }
     }
@@ -197,7 +215,8 @@ public class playerMovement : MonoBehaviour
     {
         if (playerState.isInsideCrateStack() && anim.GetBool("isCrounching") && !health.isHurt)
         {
-            if(!hide.isPlaying){
+            if (!hide.isPlaying && !health.isDead)
+            {
                 hide.Play();
             }
 
@@ -217,13 +236,17 @@ public class playerMovement : MonoBehaviour
     {
         if (playerState.isTouchedHagingRope())
         {
-            health.Decrease(100);
+            health.Decrease(health.total);
 
+            anim.ResetTrigger("die");
             anim.SetTrigger("hanged");
 
-            body.transform.position = hangPoint.position;
-            ropeCover.SetActive(true);  // VISIBLE ROPE COVER
-            body.isKinematic = true; // TURN OFF PHYSICS SO CHARACTER WONT FALL OFF
+            body.position = hangPoint.position;
+            ropeCover.SetActive(true);
+
+            // TURN OFF PHYSICS SO CHARACTER WONT FALL OFF
+            body.constraints = RigidbodyConstraints2D.FreezePosition;
+            body.isKinematic = true; 
             body.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }

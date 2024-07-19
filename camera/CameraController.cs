@@ -14,7 +14,10 @@ public class cameraControl : MonoBehaviour
     private float posX;
     private float aheadDistance;
     private float aheadDirection;
-    private float maxLeft;
+
+    [Header("Boundaries: ")]
+    [SerializeField] private GameObject leftBoundary;
+    [SerializeField] private GameObject rightBoundary;
 
     void Start()
     {
@@ -25,11 +28,14 @@ public class cameraControl : MonoBehaviour
     // FOLLOW PLAYER
     void Update()
     {
-        transform.position = new Vector3(player.position.x + aheadDirection + speed * Time.deltaTime, transform.position.y, transform.position.z);
-        aheadDirection = Mathf.Lerp(aheadDirection, (aheadDistance * player.transform.localScale.x), speed * Time.deltaTime); 
+        if(player.transform.position.x > leftBoundary.transform.position.x && player.transform.position.x < rightBoundary.transform.position.x){
+            
+            transform.position = new Vector3(player.position.x + aheadDirection + speed * Time.deltaTime, transform.position.y, transform.position.z);
+            aheadDirection = Mathf.Lerp(aheadDirection, (aheadDistance * player.transform.localScale.x), speed * Time.deltaTime); 
+        }
     }
 
     public void Move(Transform target){
-            posX = target.position.x;
+        posX = target.position.x;
     }
 }

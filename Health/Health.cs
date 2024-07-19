@@ -6,7 +6,7 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [Header("Setting: ")]
-    [SerializeField]private float total;
+    [SerializeField]public float total;
     [SerializeField] private GameObject healEffect;
 
     [Header("Sounds: ")]
