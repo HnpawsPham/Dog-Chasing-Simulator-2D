@@ -7,10 +7,6 @@ public class PointerPosition : MonoBehaviour
 {
     [SerializeField] private RectTransform[] options;
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioClip selectSound;
-    [SerializeField] private AudioClip changeSound;
-
     [Header("Pointer: ")]
     [SerializeField] private int type;
     [SerializeField] private int speed;
@@ -32,10 +28,10 @@ public class PointerPosition : MonoBehaviour
     void Update()
     {
         // CHANGE POS OF THE POINTER
-        if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || (currentPos > 0 && Input.GetKeyDown(KeyCode.LeftArrow))){
+        if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.LeftArrow)) || Input.GetKeyDown(KeyCode.A))){
             ChangePos(-1);
         }
-        else if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || (currentPos > 0 && Input.GetKeyDown(KeyCode.RightArrow))){
+        else if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.RightArrow)) || Input.GetKeyDown(KeyCode.D))){
             ChangePos(1);
         }
 
@@ -71,7 +67,7 @@ public class PointerPosition : MonoBehaviour
         currentPos += newPos;
 
         if(newPos != 0){
-            ShortSounds.instance.Play(changeSound);
+            SoundPlayer.instance.Play("key press");
         }
 
         if(currentPos < 0){
@@ -105,7 +101,7 @@ public class PointerPosition : MonoBehaviour
     }
 
     private void Select(){
-        ShortSounds.instance.Play(selectSound);
+        SoundPlayer.instance.Play("mouse click");
 
         // ACCESS BUTTON COMPONENT
         options[currentPos].GetComponent<Button>().onClick.Invoke();

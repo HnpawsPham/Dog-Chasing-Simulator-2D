@@ -9,11 +9,6 @@ public class Health : MonoBehaviour
     [SerializeField]public float total;
     [SerializeField] private GameObject healEffect;
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioClip hurt;
-    [SerializeField] private AudioClip heal;
-    [SerializeField] private AudioClip die;
-
     public float current { get; private set; }
     public bool isDead;
     public bool isHurt;
@@ -55,7 +50,7 @@ public class Health : MonoBehaviour
 
         if (current > 0)
         {
-            ShortSounds.instance.Play(hurt);
+            SoundPlayer.instance.Play(gameObject.name + " hurt");
 
             anim.SetTrigger("hurt");
             
@@ -65,14 +60,14 @@ public class Health : MonoBehaviour
         {
             if (!isDead)
             {
-                ShortSounds.instance.Play(die);
+                SoundPlayer.instance.Play(gameObject.name + " die");
 
                 anim.SetTrigger("die");
 
                 // PLAYER
                 if(GetComponent<playerMovement>() != null){
                     uIManager.GameOver();
-                    GetComponent<playerMovement>().enabled = false;
+                    GetComponent<playerMovement>().enabled = false;   
                 }
 
                 if(GetComponent<playerAttack>() != null){
@@ -81,6 +76,7 @@ public class Health : MonoBehaviour
 
                 // ENEMY
                 if(GetComponentInParent<EnemyMovement>() != null){
+                    SoundPlayer.instance.Stop(gameObject.name + " run");
                     GetComponentInParent<EnemyMovement>().enabled = false;
                 }
 
@@ -96,7 +92,7 @@ public class Health : MonoBehaviour
     public void Increase(float health){
         current = Mathf.Clamp(current + health, current, total);
 
-        ShortSounds.instance.Play(heal);
+        SoundPlayer.instance.Play("heal");
 
         healEffect.SetActive(true);
     }

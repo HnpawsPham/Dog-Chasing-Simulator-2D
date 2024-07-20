@@ -7,9 +7,6 @@ public class Stamina : MonoBehaviour
     [Header("Setting: ")]
     [SerializeField] private float total;
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioSource exhausted;
-
     public float current { get; private set; }
     public bool isExhausted;
 
@@ -35,12 +32,15 @@ public class Stamina : MonoBehaviour
         }
         else if (current > total / 3)
         {
-            exhausted.Stop();
+            SoundPlayer.instance.Stop(gameObject.name + " exhausted");
         }
 
         if (!personHealth.isDead)
         {
-            exhausted.Stop();
+            SoundPlayer.instance.Stop(gameObject.name + " exhausted");
+        }
+        else{
+            SoundPlayer.instance.Stop(gameObject.name + " exhausted");
         }
     }
 
@@ -48,12 +48,9 @@ public class Stamina : MonoBehaviour
     {
         current = Mathf.Clamp(current - minus, 0, total);
 
-        if (current <= 0)
+        if (current <= 0 && !personHealth.isDead)
         {
-            if (!exhausted.isPlaying)
-            {
-                exhausted.Play();
-            }
+            SoundPlayer.instance.Play(gameObject.name + " exhausted");
 
             isExhausted = true;
         }

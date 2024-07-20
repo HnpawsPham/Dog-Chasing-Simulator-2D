@@ -8,7 +8,7 @@ public class MedkitRespawn : MonoBehaviour
     [SerializeField] private float respawnTime;
     [SerializeField] private GameObject medkit;
 
-    void Start()
+    void Awake()
     {
         respawnWait = 0;
     }

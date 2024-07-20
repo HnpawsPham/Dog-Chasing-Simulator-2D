@@ -31,11 +31,6 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private float staminaCoolDown;
     [SerializeField] private float jumpCoolDown; // ALLOW MULTIPLE JUMPS
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioClip jump;
-    [SerializeField] private AudioSource hide;
-    [SerializeField] private AudioSource run;
-
     private float coolDownTime = Mathf.Infinity;
     private float jumpWait = Mathf.Infinity;
     private float horizontalAxis;
@@ -78,16 +73,19 @@ public class playerMovement : MonoBehaviour
             // if(Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0){
             //     body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
             // }
+
+            coolDownTime += Time.deltaTime;
+            jumpWait += Time.deltaTime;
         }
+
         // GAME OVER IF PLAYER IS DEAD
-        else{
+        else
+        {
             uIManager.GameOver();
+            this.enabled = false;
         }
 
         Hang();
-
-        coolDownTime += Time.deltaTime;
-        jumpWait += Time.deltaTime;
     }
 
     // MOVE LEFT AND RIGHT
@@ -109,13 +107,6 @@ public class playerMovement : MonoBehaviour
             body.transform.rotation = Quaternion.Euler(0, 0, 0);
 
             anim.SetBool("isWalking", true);
-
-            if (!anim.GetBool("isRunning") && coolDownTime >= staminaCoolDown)
-            {
-                stamina.Increase(staminaRecover);
-
-                coolDownTime = 0;
-            }
         }
 
         if (horizontalAxis == 0)
@@ -123,6 +114,13 @@ public class playerMovement : MonoBehaviour
             anim.SetBool("isWalking", false);
         }
 
+        // REFILL STAMINA
+        if (!anim.GetBool("isRunning") && coolDownTime >= staminaCoolDown)
+        {
+            stamina.Increase(staminaRecover);
+
+            coolDownTime = 0;
+        }
     }
 
     // RUN
@@ -132,9 +130,12 @@ public class playerMovement : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                if (!run.isPlaying && !health.isDead)
+                if (!health.isDead)
                 {
-                    run.Play();
+                    SoundPlayer.instance.Play(gameObject.name + " run");
+                }
+                else{
+                    SoundPlayer.instance.Stop(gameObject.name + " run");
                 }
 
                 anim.SetBool("isRunning", true);
@@ -165,7 +166,7 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
-            run.Stop();
+            SoundPlayer.instance.Stop(gameObject.name + " run");
 
             anim.SetBool("isRunning", false);
             playerSpeed = 5;
@@ -179,15 +180,13 @@ public class playerMovement : MonoBehaviour
         {
             jumpWait = 0;
 
-            ShortSounds.instance.Play(jump);
+            SoundPlayer.instance.Play("player jump");
 
             body.velocity = new Vector2(body.velocity.x, jumpHeight);
             anim.SetBool("jump", true);
         }
         else
         {
-            // jumpHeight = defaultJumpHeight;
-
             anim.SetBool("jump", false);
         }
     }
@@ -222,9 +221,9 @@ public class playerMovement : MonoBehaviour
     {
         if (playerState.isInsideCrateStack() && anim.GetBool("isCrounching") && !health.isHurt)
         {
-            if (!hide.isPlaying && !health.isDead)
+            if (!health.isDead)
             {
-                hide.Play();
+                SoundPlayer.instance.Play(gameObject.name + " hide");
             }
 
             eye.SetActive(true);    // VISIBLE THE EYE ON TOP OF THE PLAYER
@@ -232,7 +231,8 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
-            hide.Stop();
+            SoundPlayer.instance.Stop(gameObject.name + " hide");
+
             eye.SetActive(false);
             body.GetComponent<Renderer>().material.color = Color.white;
         }
@@ -253,7 +253,7 @@ public class playerMovement : MonoBehaviour
 
             // TURN OFF PHYSICS SO CHARACTER WONT FALL OFF
             body.constraints = RigidbodyConstraints2D.FreezePosition;
-            body.isKinematic = true; 
+            body.isKinematic = true;
             body.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }

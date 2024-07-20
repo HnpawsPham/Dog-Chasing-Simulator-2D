@@ -7,7 +7,6 @@ public class RandomWeather : MonoBehaviour
 
     [Header("Set up: ")]
     [SerializeField] private GameObject[] weathers;
-    [SerializeField] private AudioSource[] audios;
 
     private float appearTime;
     private float endTime;
@@ -24,20 +23,20 @@ public class RandomWeather : MonoBehaviour
     {
         waitTime += Time.deltaTime;
 
-        if(waitTime >= appearTime && !weathers[index].activeInHierarchy){
+        if (waitTime >= appearTime && !weathers[index].activeInHierarchy)
+        {
             weathers[index].SetActive(true);
 
-            if(!audios[index].isPlaying){
-                audios[index].Play();
-            }
+            SoundPlayer.instance.Play(weathers[index].name);
 
             waitTime = 0;
         }
 
-        if(waitTime >= endTime && weathers[index].activeInHierarchy){
+        if (waitTime >= endTime && weathers[index].activeInHierarchy)
+        {
             weathers[index].SetActive(false);
 
-            audios[index].Stop();
+            SoundPlayer.instance.Stop(weathers[index].name);
 
             waitTime = 0;
 

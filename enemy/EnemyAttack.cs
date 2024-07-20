@@ -23,9 +23,6 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] private BoxCollider2D boxCollider;
     [SerializeField] private playerState playerState;
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioClip bite;
-
     private float coolDownTime = Mathf.Infinity;
 
     private Animator anim;
@@ -109,7 +106,7 @@ public class EnemyAttack : MonoBehaviour
     {
         if (CanAttack())
         {
-            ShortSounds.instance.Play(bite);
+            SoundPlayer.instance.Play("dog bite");
 
             playerHealth.Decrease(attackDamage);
         }

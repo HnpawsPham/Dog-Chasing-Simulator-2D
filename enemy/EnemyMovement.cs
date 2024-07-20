@@ -35,10 +35,6 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float jumpDelay;
 
 
-    [Header("Sounds: ")]
-    [SerializeField] private AudioSource run;
-
-
     [SerializeField] private Animator anim;
 
     private float idleWait;
@@ -67,7 +63,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (!enemyAttack.PlayerInSight())
         {
-            run.Stop();
+            SoundPlayer.instance.Stop(gameObject.name + " run");
             // NORMAL SPEED WHEN NOT CHASING
             speed = defaultSpeed;
 
@@ -116,11 +112,12 @@ public class EnemyMovement : MonoBehaviour
             enemy.localScale = new Vector3(Mathf.Abs(currentScale.x) * direction, currentScale.y, currentScale.z);
 
             // CHASE PLAYER 
-            if(!run.isPlaying && !GetComponentInChildren<Health>().isDead){
-                run.Play();
+            if(!GetComponentInChildren<Health>().isDead){
+                SoundPlayer.instance.Play(gameObject.name + " run");
             }
             else{
-                run.Stop();
+                SoundPlayer.instance.Stop(gameObject.name + " run");
+                this.enabled = false;
             }
 
             enemy.position = new Vector3(enemy.position.x + Time.deltaTime * direction * speed, enemy.position.y, enemy.position.z);

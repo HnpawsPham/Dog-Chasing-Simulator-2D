@@ -6,9 +6,6 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverScreen;
-
-    [Header("Sounds: ")]
-    [SerializeField] private AudioClip gameOverSFX;
     
     void Start()
     {
@@ -25,13 +22,12 @@ public class UIManager : MonoBehaviour
     }
 
     public void GameOver(){
-        gameOverScreen.SetActive(true);
-        ShortSounds.instance.Play(gameOverSFX);
+        StartCoroutine(EndGame());
     }
 
     // GAME OVER OPTIONS HANDLE
     public void Restart(){
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(Mathf.Max(SceneManager.GetActiveScene().buildIndex, 2));
     }
 
     public void Menu(){
@@ -42,4 +38,15 @@ public class UIManager : MonoBehaviour
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;
     }
+
+    private IEnumerator EndGame(){
+        yield return new WaitForSeconds(1.5f);
+
+        SoundPlayer.instance.ClearInGameSounds();
+
+        gameOverScreen.SetActive(true);
+        SoundPlayer.instance.Play("game over");
+    }
 }
+
+    
