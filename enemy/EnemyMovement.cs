@@ -1,11 +1,6 @@
 
 using System;
 using System.Collections;
-using System.Data.Common;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Dependencies.Sqlite;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.Timeline;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
@@ -25,7 +20,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Enemy movement:")]
     [SerializeField] private float defaultSpeed;
     [SerializeField] private float maxSpeed;
-    [SerializeField] private float jumpHeight;
+    [SerializeField] public float jumpHeight;
 
     [Header("Layers: ")]
     [SerializeField] private LayerMask surfaceLayer;
@@ -171,6 +166,7 @@ public class EnemyMovement : MonoBehaviour
     IEnumerator Jump(){
         yield return new WaitForSeconds(jumpDelay);
 
+        anim.SetTrigger("jump");
         body.velocity = new Vector2(body.velocity.x, jumpHeight);
     }
 }

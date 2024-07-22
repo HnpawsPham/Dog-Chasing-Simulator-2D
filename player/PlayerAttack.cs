@@ -1,11 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using TreeEditor;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class playerAttack : MonoBehaviour
 {
@@ -23,13 +17,19 @@ public class playerAttack : MonoBehaviour
     [SerializeField] private GameObject[] ammos;
     
 
-    private float cooldownTimer = Mathf.Infinity;
+    private float attackWait = Mathf.Infinity;
+    private float shootWait = Mathf.Infinity;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
         playerMovement = GetComponent<playerMovement>();
         playerState = GetComponent<playerState>();
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            shootCooldown += shootCooldown / 2;
+        }
     }
     void Start()
     {
@@ -39,28 +39,29 @@ public class playerAttack : MonoBehaviour
     void Update()
     {
         // ATTACK
-        if(Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerState.canAttack()){
+        if(Input.GetMouseButton(0) && attackWait > attackCooldown && playerState.canAttack()){
             Attack();
         }
 
         // SHOOT
-        if(Input.GetMouseButton(1) && cooldownTimer > shootCooldown && playerState.canShoot() && playerState.ammoLeft > 0){
+        if(Input.GetMouseButton(1) && shootWait > shootCooldown && playerState.canShoot() && playerState.ammoLeft > 0){
             Shoot();
         }
 
         // RECHARGE
         if(Input.GetKey(KeyCode.R) || playerState.ammoLeft == 0){
-            if(cooldownTimer > rechargeCooldown && playerState.canRecharge()){
+            if(playerState.canRecharge()){
                 Recharge();
             }
         }
 
-        cooldownTimer += Time.deltaTime;
+        attackWait += Time.deltaTime;
+        shootWait += Time.deltaTime;
     }
     // ATTACK: PUT OUT GUN AND STRIKE
     private void Attack()
     {
-        cooldownTimer = 0;
+        attackWait = 0;
         anim.SetTrigger("attack");
 
         if(playerState.HitEnemy()){}
@@ -71,7 +72,7 @@ public class playerAttack : MonoBehaviour
     {
         SoundPlayer.instance.Play("gun");
 
-        cooldownTimer = 0;
+        shootWait = 0;
         anim.SetTrigger("shoot");
 
         playerState.ammoLeft--;
@@ -85,7 +86,6 @@ public class playerAttack : MonoBehaviour
     {
         SoundPlayer.instance.Play("recharge");
 
-        cooldownTimer = 0;
         anim.SetBool("recharge", true);
 
         for(int i=0; i < ammos.Length; i++){

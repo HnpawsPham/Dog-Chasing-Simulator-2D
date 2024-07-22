@@ -49,7 +49,6 @@ public class OptionsHandle : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
-        UnityEditor.EditorApplication.isPlaying = false;
     }
 
     public void OpenSetting()

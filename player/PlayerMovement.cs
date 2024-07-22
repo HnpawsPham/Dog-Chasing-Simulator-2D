@@ -1,9 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
@@ -47,6 +41,11 @@ public class playerMovement : MonoBehaviour
         stamina = GetComponent<Stamina>();
 
         uIManager = FindObjectOfType<UIManager>();
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            stamina.total /= 3;
+        }
     }
 
     public void Start()

@@ -25,6 +25,8 @@ public class MovementBoundaries : MonoBehaviour
         {
             transform.position = nearestCheckpoint.position;
             anim.SetTrigger("respawn");
+
+            SoundPlayer.instance.Play("respawn");
         }
 
         // SET NEW NEAREST CHECKPOINT

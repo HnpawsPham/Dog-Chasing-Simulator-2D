@@ -19,6 +19,12 @@ public class StaticTrap : MonoBehaviour
 
         anim = GetComponent<Animator>();
         trap = GetComponent<BoxCollider2D>();
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            damage += damage / 2;
+            resetWait -= resetWait / 2;
+        }
     }
 
 

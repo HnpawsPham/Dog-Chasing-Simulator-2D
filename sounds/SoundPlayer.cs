@@ -35,8 +35,7 @@ public class SoundPlayer : MonoBehaviour
             sound.source.clip = sound.audio;
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
-
-            sound.source.outputAudioMixerGroup = sound.mixer;
+            sound.source.outputAudioMixerGroup =sound.mixer;
         }
 
         foreach (Sound sound in eventSounds)
@@ -45,8 +44,7 @@ public class SoundPlayer : MonoBehaviour
             sound.source.clip = sound.audio;
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
-
-            sound.source.outputAudioMixerGroup = sound.mixer;
+            sound.source.outputAudioMixerGroup =sound.mixer;
         }
     }
 
@@ -57,7 +55,8 @@ public class SoundPlayer : MonoBehaviour
         backgroundMusic.source.volume = backgroundMusic.volume;
         backgroundMusic.source.pitch = backgroundMusic.pitch;
         backgroundMusic.loop = true;
-        backgroundMusic.source.outputAudioMixerGroup = backgroundMusic.mixer;
+
+        backgroundMusic.source.outputAudioMixerGroup =backgroundMusic.mixer;
 
         backgroundMusic.source.Play();
     }
@@ -108,7 +107,9 @@ public class SoundPlayer : MonoBehaviour
             try{
                 sound.source.Stop();
             }
-            catch{}
+            catch{
+                Debug.Log("error");
+            }
         }
     }
 }

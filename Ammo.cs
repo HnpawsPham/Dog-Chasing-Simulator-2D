@@ -5,25 +5,30 @@ public class Ammo : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float damage;
-
+    [SerializeField] private float lifespan;
 
     private bool hit;
     private float direction;
-    private float flyDuration;
+    private float fliedDuration;
+
 
     private BoxCollider2D boxCollider;
     private Animator anim;
     
     void Start()
     {
-        speed = 10;
         direction = 1;
-        flyDuration = 0;
+        fliedDuration = 0;
     }
     void Awake()
     {
         boxCollider = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            damage -= damage / 3;
+        }
     }
 
     void Update()
@@ -36,8 +41,8 @@ public class Ammo : MonoBehaviour
         transform.Translate(speedRealTime, 0, 0);
         
 
-        flyDuration += Time.deltaTime;
-        if(flyDuration > 5){
+        fliedDuration += Time.deltaTime;
+        if(fliedDuration >= lifespan){
             gameObject.SetActive(false);
         }
     }
@@ -59,7 +64,7 @@ public class Ammo : MonoBehaviour
         hit = false;
         boxCollider.enabled = true;
 
-        flyDuration = 0;
+        fliedDuration = 0;
 
         // FLIP AMMO
         float localScaleX = transform.localScale.x;

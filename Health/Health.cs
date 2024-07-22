@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public class Health : MonoBehaviour
@@ -64,14 +62,12 @@ public class Health : MonoBehaviour
 
                 anim.SetTrigger("die");
 
-                // PLAYER
-                if(GetComponent<playerMovement>() != null){
-                    uIManager.GameOver();
-                    GetComponent<playerMovement>().enabled = false;   
+                // VISIBLE END SCREEN
+                if(gameObject.tag == "enemy"){
+                    uIManager.GameWin();
                 }
-
-                if(GetComponent<playerAttack>() != null){
-                    GetComponent<playerAttack>().enabled = false;
+                else if(gameObject.tag == "Player"){
+                    uIManager.GameOver();
                 }
 
                 // ENEMY
@@ -83,6 +79,15 @@ public class Health : MonoBehaviour
                 if(GetComponent<EnemyAttack>() != null){
                     GetComponent<EnemyAttack>().enabled = false;
                 }
+
+                if(GetComponent<EnemyDodge>() != null){
+                    GetComponent<EnemyDodge>().enabled = false;
+                }
+
+                // PLAYER
+                FindObjectOfType<playerMovement>().enabled = false;
+                FindObjectOfType<playerAttack>().enabled = false;
+                FindObjectOfType<playerState>().enabled = false;
                 
                 isDead = true;
             }

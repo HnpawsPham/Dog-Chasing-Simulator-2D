@@ -34,6 +34,11 @@ public class EnemyAttack : MonoBehaviour
         anim = GetComponent<Animator>();
         enemyMovement = GetComponentInParent<EnemyMovement>();
         playerState.GetComponent<playerState>();
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            attackDamage += attackDamage / 2;
+        }
     }
 
     void Start()

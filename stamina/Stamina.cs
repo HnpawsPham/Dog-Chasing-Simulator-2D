@@ -5,7 +5,7 @@ public class Stamina : MonoBehaviour
 {
 
     [Header("Setting: ")]
-    [SerializeField] private float total;
+    [SerializeField] public float total;
 
     public float current { get; private set; }
     public bool isExhausted;

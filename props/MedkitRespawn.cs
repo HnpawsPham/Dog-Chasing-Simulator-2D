@@ -11,6 +11,11 @@ public class MedkitRespawn : MonoBehaviour
     void Awake()
     {
         respawnWait = 0;
+
+        // HARD MODE ADJUST
+        if(PlayerPrefs.GetInt("gameMode") == 1){
+            respawnTime += respawnTime / 2;
+        }
     }
 
 

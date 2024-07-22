@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,52 +5,72 @@ public class PointerPosition : MonoBehaviour
 {
     [SerializeField] private RectTransform[] options;
 
-    [Header("Pointer: ")]
+    [Header("Pointer setting: ")]
     [SerializeField] private int type;
-    [SerializeField] private int speed;
-    [SerializeField] private float maxIn;
-    [SerializeField] private float maxOut;
-
-    private bool moveIn;
-    private RectTransform rect;
+    [SerializeField] private float moveTime;
     [SerializeField] private RectTransform otherPointer;
 
+    private bool moveIn;
+    private bool adjustedSpeed = false;
+    private float speed;
+    private float maxOut;
     private int currentPos;
 
-    private void Awake() {
+    private RectTransform rect;
+    private BoxCollider2D boxCollider;
+
+    private void Awake()
+    {
         moveIn = true;
+
         currentPos = 0;
         rect = GetComponent<RectTransform>();
+
+        maxOut = Screen.width / 2 - options[currentPos].sizeDelta.x;
     }
 
     void Update()
     {
         // CHANGE POS OF THE POINTER
-        if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.LeftArrow)) || Input.GetKeyDown(KeyCode.A))){
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.LeftArrow)) || Input.GetKeyDown(KeyCode.A)))
+        {
             ChangePos(-1);
         }
-        else if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.RightArrow)) || Input.GetKeyDown(KeyCode.D))){
+        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || (currentPos > 0 && (Input.GetKeyDown(KeyCode.RightArrow)) || Input.GetKeyDown(KeyCode.D)))
+        {
             ChangePos(1);
         }
 
         // SELECT OPTIONS
-        if(Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return)){
+        if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+        {
             Select();
         }
 
         // MAKE KAWAII ANIMATION
-        if(type == 2){
-            if(moveIn){
-                if(rect.position.x < maxIn){
-                    rect.position = new Vector3(rect.position.x + speed * Time.deltaTime, rect.position.y, rect.position.z);
-                    otherPointer.position = new Vector3(otherPointer.position.x - speed * Time.deltaTime, otherPointer.position.y, otherPointer.position.z);
-                }
-                else{
-                    moveIn = false;
-                }
+        if (type == 2)
+        {
+            // KEEP MOVE TIME STABLE EVEN IF THE TEXT SIZE IS DIFFERENT (IN + OUT = 1 SEC FOR EXAMPLE)
+            if(!adjustedSpeed){
+                speed = (Screen.width / 2 - maxOut) / moveTime;
+                adjustedSpeed = true;
             }
-            else{
-                if(rect.position.x > maxOut){
+
+            // CHECK IF 2 POINTER TOUCHES EACH OTHER
+            if(rect.position.x + rect.sizeDelta.x / 1.5 >= otherPointer.position.x){
+                moveIn = false;
+            }   
+
+            // MOVE IN AND OUT HANDLE
+            if (moveIn)
+            {
+                rect.position = new Vector3(rect.position.x + speed * Time.deltaTime, rect.position.y, rect.position.z);
+                otherPointer.position = new Vector3(otherPointer.position.x - speed * Time.deltaTime, otherPointer.position.y, otherPointer.position.z);
+            }
+            else
+            {
+                if (rect.position.x > maxOut)
+                {
                     rect.position = new Vector3(rect.position.x - speed * Time.deltaTime, rect.position.y, rect.position.z);
                     otherPointer.position = new Vector3(otherPointer.position.x + speed * Time.deltaTime, otherPointer.position.y, otherPointer.position.z);
                 }
@@ -63,34 +81,43 @@ public class PointerPosition : MonoBehaviour
         }
     }
 
-    private void ChangePos(int newPos){
+    private void ChangePos(int newPos)
+    {
         currentPos += newPos;
+        adjustedSpeed = false;
 
-        if(newPos != 0){
+        if (newPos != 0)
+        {
             SoundPlayer.instance.Play("key press");
         }
 
-        if(currentPos < 0){
+        // INFINITE LOOP
+        if (currentPos < 0)
+        {
             currentPos = options.Length - 1;
         }
-        else if(currentPos > options.Length - 1){
+        else if (currentPos > options.Length - 1)
+        {
             currentPos = 0;
         }
 
         // TYPES MENU
-        switch(type){
+        switch (type)
+        {
             // ROTATE & LEFT
             case 1:
-                rect.position = new Vector3(options[currentPos].position.x + options[currentPos].sizeDelta.x / 2, 
+                rect.position = new Vector3(options[currentPos].position.x + options[currentPos].sizeDelta.x / 2,
                 options[currentPos].position.y - 50, 0);
                 break;
 
             // KAWAII 
             case 2:
-                rect.position = new Vector3(options[currentPos].position.x - Mathf.Abs(options[currentPos].sizeDelta.x * 5), 
+                maxOut = Screen.width / 2 - options[currentPos].sizeDelta.x;
+                
+                rect.position = new Vector3(options[currentPos].position.x - Mathf.Abs(options[currentPos].sizeDelta.x),
                 options[currentPos].position.y, 0);
 
-                otherPointer.position = new Vector3(options[currentPos].position.x + Mathf.Abs(options[currentPos].sizeDelta.x * 5), 
+                otherPointer.position = new Vector3(options[currentPos].position.x + Mathf.Abs(options[currentPos].sizeDelta.x),
                 options[currentPos].position.y, 0);
 
                 break;
@@ -100,7 +127,8 @@ public class PointerPosition : MonoBehaviour
         }
     }
 
-    private void Select(){
+    private void Select()
+    {
         SoundPlayer.instance.Play("mouse click");
 
         // ACCESS BUTTON COMPONENT
